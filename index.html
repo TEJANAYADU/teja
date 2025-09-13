@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Campus Info Chatbot</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  header {
+    background-color: #004080;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+  }
+  #chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  #messages {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+  }
+  .message {
+    margin-bottom: 1rem;
+    max-width: 80%;
+    line-height: 1.4;
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    clear: both;
+  }
+  .user {
+    background-color: #0084ff;
+    color: white;
+    float: right;
+    text-align: right;
+  }
+  .bot {
+    background-color: #e4e6eb;
+    color: #050505;
+    float: left;
+  }
+  #input-area {
+    display: flex;
+    border-top: 1px solid #ddd;
+  }
+  #user-input {
+    flex: 1;
+    padding: 1rem;
+    font-size: 1rem;
+    border: none;
+    outline: none;
+  }
+  #send-btn {
+    background-color: #004080;
+    color: white;
+    border: none;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  #send-btn:hover {
+    background-color: #0066cc;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Campus Info Chatbot</h1>
+</header>
+
+<div id="chat-container">
+  <div id="messages"></div>
+  <div id="input-area">
+    <input type="text" id="user-input" placeholder="Ask me about campus info..." autocomplete="off" />
+    <button id="send-btn">Send</button>
+  </div>
+</div>
+
+<script>
+  // Campus info database (basic data)
+  const campusData = {
+    schedules: {
+      "monday": "Classes start at 8 AM and end at 5 PM on Mondays.",
+      "tuesday": "Tuesday schedule: 9 AM to 4 PM with labs in the afternoon.",
+      "wednesday": "Wednesday schedule: 8 AM to 5 PM, with a break at noon.",
+      "thursday": "Thursday schedule: 9 AM to 4 PM.",
+      "friday": "Friday schedule: 8 AM to 3 PM. No classes on weekends."
+    },
+    facilities: {
+      "gym": "The campus gym is open from 6 AM to 10 PM every day.",
+      "library": "The main library is open from 8 AM to 10 PM on weekdays.",
+      "parking": "Parking lots are available near all main buildings; student parking requires a permit.",
+      "labs": "Computer labs are available in building B, open 24/7 for students."
+    },
+    dining: {
+      "cafeteria": "The cafeteria offers breakfast, lunch, and dinner. Open from 7 AM to 8 PM.",
+      "coffee": "Campus coffee shops are open from 7 AM to 6 PM.",
+      "menu": "Daily menus are posted on the dining website and include vegetarian options."
+    },
+    libraryservice: {
+      "hours": "Library hours: Mon-Fri 8 AM - 10 PM, Sat 10 AM - 6 PM, Sun closed.",
+      "borrowing": "You can borrow up to 5 books for 3 weeks. Renewals allowed online.",
+      "studyrooms": "Study rooms can be booked online up to 1 week in advance."
+    },
+    administrative: {
+      "registration": "Course registration opens 2 weeks before semester start via the student portal.",
+      "transcripts": "Official transcripts can be requested at the registrar’s office or online.",
+      "financialaid": "Financial aid applications are due by the end of July every year."
+    }
+  };
+
+  // Basic chatbot response generator
+  function getBotResponse(input) {
+    input = input.toLowerCase();
+
+    // Keywords to categories
+    if (input.includes("schedule") || input.includes("class") || input.includes("time")) {
+      for (let day in campusData.schedules) {
+        if (input.includes(day)) {
+          return campusData.schedules[day];
+        }
+      }
+      return "Our campus classes run Monday to Friday. Ask me about a specific day for details!";
+    }
+    if (input.includes("facility") || input.includes("facilities") || input.includes("gym") || input.includes("parking") || input.includes("lab")) {
+      for (let facility in campusData.facilities) {
+        if (input.includes(facility)) {
+          return campusData.facilities[facility];
+        }
+      }
+      return "We have a gym, library, parking, and computer labs. Ask about any of these!";
+    }
+    if (input.includes("dining") || input.includes("food") || input.includes("cafeteria") || input.includes("coffee") || input.includes("menu")) {
+      for (let diningItem in campusData.dining) {
+        if (input.includes(diningItem)) {
+          return campusData.dining[diningItem];
+        }
+      }
+      return "Our dining options include a cafeteria and coffee shops. Ask about menus or hours!";
+    }
+    if (input.includes("library") || input.includes("borrow") || input.includes("study room") || input.includes("hours")) {
+      for (let libItem in campusData.libraryservice) {
+        if (input.includes(libItem)) {
+          return campusData.libraryservice[libItem];
+        }
+      }
+      return "The library is open weekdays and offers book borrowing and study rooms.";
+    }
+    if (input.includes("administrative") || input.includes("registration") || input.includes("transcript") || input.includes("financial aid")) {
+      for (let adminItem in campusData.administrative) {
+        if (input.includes(adminItem)) {
+          return campusData.administrative[adminItem];
+        }
+      }
+      return "You can ask me about registration, transcripts, or financial aid procedures.";
+    }
+
+    // Greetings
+    if (input.includes("hello") || input.includes("hi") || input.includes("hey")) {
+      return "Hello! How can I assist you with campus information today?";
+    }
+    if (input.includes("thank")) {
+      return "You're welcome! If you have more questions, just ask.";
+    }
+
+    return "Sorry, I didn't understand that. Can you ask about schedules, facilities, dining, library, or administrative procedures?";
+  }
+
+  // DOM elements
+  const messagesDiv = document.getElementById("messages");
+  const userInput = document.getElementById("user-input");
+  const sendBtn = document.getElementById("send-btn");
+
+  // Add message to chat window
+  function addMessage(text, sender) {
+    const msgDiv = document.createElement("div");
+    msgDiv.classList.add("message");
+    msgDiv.classList.add(sender);
+    msgDiv.textContent = text;
+    messagesDiv.appendChild(msgDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  // Handle send
+  function handleSend() {
+    const input = userInput.value.trim();
+    if (!input) return;
+
+    addMessage(input, "user");
+    userInput.value = "";
+
+    setTimeout(() => {
+      const botResponse = getBotResponse(input);
+      addMessage(botResponse, "bot");
+    }, 600); // Simulate typing delay
+  }
+
+  // Send on button click
+  sendBtn.addEventListener("click", handleSend);
+
+  // Send on Enter key
+  userInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSend();
+    }
+  });
+
+  // Greet user on load
+  window.onload = () => {
+    addMessage("Hi! I am your campus assistant. Ask me anything about schedules, facilities, dining, library, or administrative procedures.", "bot");
+  };
+</script>
+
+</body>
+</html>
